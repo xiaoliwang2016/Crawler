@@ -8,13 +8,7 @@ const Actor = global.sequelize.define('actor', {
 	},
 	name: {
 		type: Sequelize.STRING,
-		allowNull: false,
-		validate: {
-			len: {
-				args: [2, 255],
-				msg: '长度必须在2-255位'
-			}
-		}
+		allowNull: true
 	},
 	gender: {
 		type: Sequelize.INTEGER,
@@ -29,18 +23,12 @@ const Actor = global.sequelize.define('actor', {
 		allowNull: true
 	},
 	born_regoin: {
-		type: Sequelize.DATE,
+		type: Sequelize.STRING,
 		allowNull: true
 	},
 	career: {
 		type: Sequelize.STRING,
-		allowNull: true,
-		validate: {
-			len: {
-				args: [2, 50],
-				msg: '长度必须在2-50位'
-			}
-		}
+		allowNull: true
 	},
 	resume: {
 		type: Sequelize.STRING,
@@ -48,13 +36,7 @@ const Actor = global.sequelize.define('actor', {
 	},
 	alias: {
 		type: Sequelize.STRING,
-		allowNull: true,
-		validate: {
-			len: {
-				args: [2, 255],
-				msg: '长度必须在2-255位'
-			}
-		}	
+		allowNull: true
 	},
 	thumb: {
 		type: Sequelize.STRING,

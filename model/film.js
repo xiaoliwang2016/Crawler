@@ -8,13 +8,7 @@ const Film = global.sequelize.define('film', {
 	},
 	title: {
 		type: Sequelize.STRING,
-		allowNull: false,
-		validate: {
-			len: {
-				args: [2, 255],
-				msg: '长度必须在2-255位'
-			}
-		}
+		allowNull: false
 	},
 	thumb: {
 		type: Sequelize.INTEGER,
@@ -30,13 +24,7 @@ const Film = global.sequelize.define('film', {
 	},
 	type: {
 		type: Sequelize.STRING,
-		allowNull: true,
-		validate: {
-			len: {
-				args: [2, 50],
-				msg: '长度必须在2-50位'
-			}
-		}
+		allowNull: true
 	},
 	duration: {
 		type: Sequelize.STRING,
@@ -44,53 +32,23 @@ const Film = global.sequelize.define('film', {
 	},
 	alias: {
 		type: Sequelize.STRING,
-		allowNull: true,
-		validate: {
-			len: {
-				args: [2, 255],
-				msg: '长度必须在2-255位'
-			}
-		}	
+		allowNull: true	
 	},
 	region: {
 		type: Sequelize.STRING,
-		allowNull: true,
-		validate: {
-			len: {
-				args: [1, 100],
-				msg: '长度必须在2-100位'
-			}
-		}	
+		allowNull: true	
 	},
 	language: {
 		type: Sequelize.STRING,
-		allowNull: true,
-		validate: {
-			len: {
-				args: [1, 100],
-				msg: '长度必须在2-100位'
-			}
-		}	
+		allowNull: true
 	},
 	actor_id: {
 		type: Sequelize.STRING,
-		allowNull: true,
-		validate: {
-			len: {
-				args: [1, 100],
-				msg: '长度必须在2-100位'
-			}
-		}	
+		allowNull: true	
 	},
 	director_id: {
 		type: Sequelize.STRING,
-		allowNull: true,
-		validate: {
-			len: {
-				args: [1, 20],
-				msg: '长度必须在2-100位'
-			}
-		}			
+		allowNull: true			
 	},
 	description: {
 		type: Sequelize.STRING,
