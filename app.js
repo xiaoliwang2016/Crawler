@@ -29,6 +29,12 @@ sequelize.authenticate().then(() => {
 	console.error('Unable to connect to the database:', err);
 })
 
+// const headers = {
+// 	'Host': 'movie.douban.com',
+// 	'Referer': 'https://movie.douban.com/',
+// 	'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'
+// }
+
 const doubanApi = 'https://movie.douban.com/j/search_subjects?type=movie&tag=%E7%83%AD%E9%97%A8&page_limit=50&page_start=0'
 
 getListInfo()
@@ -43,26 +49,36 @@ function downloadImage(url){
 		}
 		ImageModel.create(data).then(result => {
 			resolve(result.dataValues.id)
+		}).catch(err => {
+			reject('保存图片失败')
 		})
 	})
 }
 
-var curpage = 0
-var pageTotal = 0
-
 function getListInfo(){
 	request(doubanApi,function(err, response, body){
 		var list = JSON.parse(response.body)
-
+		getFilmByPage(list.subjects)
 	})
 }
 
 //分页获取
-function getFilmByPage(filmArr){
-	return new Promise((resolve, reject) => {
-		Promise.all(getFilmInfo(filmArr)).then(ids => {
-			resolve()
-		})	
+function getFilmByPage(list){
+	if(list.length == 0){
+		console.log('完成')
+		return
+	}
+	var arr = []
+	arr.push(list.pop().url)
+	Promise.all(getFilmInfo(arr)).then(result => {
+		console.log(`保存电影${result[0]}成功`)
+	}).catch(err => {
+		console.log(err)
+	}).finally(() => {
+		var gap = Math.random() * 30000
+		setTimeout(()=>{
+			getFilmByPage(list)
+		},gap)	
 	})
 }
 
@@ -75,12 +91,14 @@ function getFilmInfo(urls){
 				if(!err && response.statusCode == 200){
 					//影片数据
 					parseFilmPage(response.body).then(data => {
-						console.log(data);
 						FilmModel.create(data).then(result => {
-							console.log(`保存电影${result.dataValues.title}成功`);
-							resolve(result.dataValues.id)
+							resolve(result.dataValues.title)
+						}).catch(err => {
+							reject('保存电影失败')
 						})
-					})
+					}).catch(err => {
+						reject(err)
+					})					
 				}
 			})			
 		}))
@@ -119,8 +137,14 @@ function parseFilmPage(content){
 
 			downloadImage(obj.thumb).then(imgId => {
 				obj.thumb = imgId
+			}).catch(err => {
+				obj.thumb = 0
+				reject(err)
+			}).finally(() => {
 				resolve(obj)
-			})	
+			})
+		}).catch(err => {
+			reject(err)
 		})
 	})	
 }
@@ -137,15 +161,19 @@ function getAcrotInfo(urls){
 	promiseArr = []
 	urls.forEach(url => {
 		promiseArr.push(new Promise((resolve, reject) => {
-			request(url,function(err, response, body){
-				if(!err && response.statusCode == 200){
-					parseActorPage(response.body).then(data => {
-						ActorModel.create(data).then(result => {
-							resolve(result.dataValues.id)
+			setTimeout(()=>{
+				request(url,function(err, response, body){
+					if(!err && response.statusCode == 200){
+						parseActorPage(response.body).then(data => {
+							ActorModel.create(data).then(result => {
+								resolve(result.dataValues.id)
+							}).catch(err => {
+								reject('保存演员失败')
+							})
 						})
-					})
-				}
-			})			
+					}
+				})					
+			},Math.random()*30000)
 		}))
 	})
 	return promiseArr
@@ -191,6 +219,8 @@ function parseActorPage(content){
 			info.thumb = imageIds[0]
 			info.imgs = imageIds.slice(1).join(',')
 			resolve(info)
+		}).catch(err => {
+			reject(err)
 		})
 	})	
 }
